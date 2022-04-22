@@ -7,7 +7,7 @@ import (
 )
 
 // git交互下代码
-func Git(url string, branch string, workDir string, ch *chan []byte){
+func Git(url string, branch string, workDir string, ch *chan string){
 	execShell.ExecShell("git init", workDir, ch)
 	execShell.ExecShell("git remote add origin " + url, workDir, ch)
 	execShell.ExecShell("git fetch origin", workDir, ch)
@@ -15,14 +15,14 @@ func Git(url string, branch string, workDir string, ch *chan []byte){
 }
 
 // 执行脚本
-func ExecScript(scripts string, scriptDir string, workDir string, ch *chan []byte){
+func ExecScript(scripts string, scriptDir string, workDir string, ch *chan string){
 	filePath := execShell.CreateTempShell(scriptDir, scripts)
 	if strings.Contains(os.Getenv("os"), "Windows"){
 		execShell.ExecShell(filePath, workDir, ch)
 	} else {
 		execShell.ExecShell("sh " + filePath, workDir, ch)
 	}
-	// execShell.DelFile(filePath)
+	execShell.DelFile(filePath)
 }
 
 // http调用

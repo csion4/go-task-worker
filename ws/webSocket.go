@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
@@ -9,10 +8,10 @@ import (
 	"os"
 )
 
-var OverFlag = []byte("Over!")
+const OverFlag = "Over!"
 
 // websocket客户端
-func WebSocketClient(ch *chan []byte, taskCode string, recordId int) {
+func WebSocketClient(ch *chan string, taskCode string, recordId int) {
 	header := http.Header{}
 	header.Set("auth", os.Getenv("Auth"))
 	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://%s/ws/clusterResp?taskCode=%s&recordId=%d", os.Getenv("MNode"), taskCode, recordId), header)
@@ -25,13 +24,12 @@ func WebSocketClient(ch *chan []byte, taskCode string, recordId int) {
 
 	for ;; {
 		logs := <- *ch
-		err = conn.WriteMessage(websocket.TextMessage, logs)
+		err = conn.WriteMessage(websocket.TextMessage, []byte(logs))
 		if err != nil {
 			log.Println("Error WriteMessage to Websocket Server:", err)
 			return
 		}
-		if bytes.Equal(logs, OverFlag) {
-			fmt.Println(taskCode + " -> task over!")
+		if logs == OverFlag {
 			return
 		}
 	}

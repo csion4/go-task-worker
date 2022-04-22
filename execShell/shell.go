@@ -7,10 +7,10 @@ import (
 	"strings"
 )
 
-var OverFlag = []byte("Over!")
+const OverFlag = "Over!"
 //执行shell脚本
-func ExecShell(cmd string, dir string, ch *chan []byte) {
-	 *ch <- []byte("【script】: " + cmd + " \n")
+func ExecShell(cmd string, dir string, ch *chan string) {
+	 *ch <- "【script】: " + cmd + " \n"
 
 	 var command *exec.Cmd
 	if strings.Contains(os.Getenv("os"), "Windows"){
@@ -18,19 +18,18 @@ func ExecShell(cmd string, dir string, ch *chan []byte) {
 	} else {
 		command = exec.Command("/bin/sh", "-c", cmd)
 	}
-	// command := exec.Command("cmd", "/C", cmd)	window
 	command.Dir = dir
 
 	pipe, err1 := command.StdoutPipe()
 	if err1 != nil {
-		*ch <- []byte("【ERROR】:" + err1.Error() + "\n")
+		*ch <- "【ERROR】:" + err1.Error() + "\n"
 		*ch <- OverFlag
 		return
 	}
 	defer pipe.Close()
 
 	if err2 := command.Start(); err2 != nil {
-		*ch <- []byte("【ERROR】:" + err2.Error() + "\n")
+		*ch <- "【ERROR】:" + err2.Error() + "\n"
 		*ch <- OverFlag
 		return
 	}
@@ -41,7 +40,7 @@ func ExecShell(cmd string, dir string, ch *chan []byte) {
 		if err != nil {
 			return
 		}
-		*ch <- append(line, ' ', '\n')
+		*ch <- string(line) + "\n"
 	}
 
 }

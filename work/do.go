@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-var OverFlag = []byte("Over!")
+const OverFlag = "Over!"
 
 func RunTask(taskInfo *vo.TaskVO) {
 	stages := taskInfo.Stages
@@ -24,17 +24,17 @@ func RunTask(taskInfo *vo.TaskVO) {
 	workSpace := taskHome + "workspace/"
 
 
-	ch := make(chan []byte, 1024)
+	ch := make(chan string, 1024)
 	go ws.WebSocketClient(&ch, taskCode, recordId)
 
 	// 创建目录
 	if err := utils.CreateDir(workSpace + taskCode, 0666); err != nil {
-		ch <- []byte("【ERROR】 Init Workspace Error:" + err.Error() + "\n")
+		ch <- "【ERROR】 Init Workspace Error:" + err.Error() + "\n"
 		ch <- OverFlag
 		return
 	}
 	if err := utils.CreateDir(workSpace + taskCode + "@script", 0666); err != nil {
-		ch <- []byte("【ERROR】 Init Workspace Error:" + err.Error() + "\n")
+		ch <- "【ERROR】 Init Workspace Error:" + err.Error() + "\n"
 		ch <- OverFlag
 		return
 	}
@@ -43,15 +43,15 @@ func RunTask(taskInfo *vo.TaskVO) {
 		for stage, env := range stageMap {
 			switch stage {
 			case 1:
-				ch <- []byte("----【start stage clone git project】---- \n")
+				ch <- "----【start stage clone git project】---- \n"
 				Git(env["gitUrl"], env["branch"], workSpace + taskCode, &ch)
 				break
 			case 2:
-				ch <- []byte("----【start stage exec script】---- \n")
+				ch <- "----【start stage exec script】---- \n"
 				ExecScript(env["script"], workSpace + taskCode + "@script" , workSpace + taskCode, &ch)
 				break
 			default:
-				ch <- []byte(fmt.Sprintf("----【unknown stageId %s】----%s", strconv.Itoa(stage), "\n"))
+				ch <- fmt.Sprintf("----【unknown stageId %s】----%s", strconv.Itoa(stage), "\n")
 				break
 			}
 		}
