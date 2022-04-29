@@ -25,7 +25,7 @@ func RunTask(taskInfo *vo.TaskVO) {
 
 
 	ch := make(chan string, 1024)
-	go ws.WebSocketClient(&ch, taskCode, recordId)
+	go ws.WebSocketClient(ch, taskCode, recordId)
 
 	// 创建目录
 	if err := utils.CreateDir(workSpace + taskCode, 0666); err != nil {
