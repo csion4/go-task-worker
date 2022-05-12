@@ -16,7 +16,7 @@ func Git(url string, branch string, workDir string, ch *chan string){
 
 // 执行脚本
 func ExecScript(scripts string, scriptDir string, workDir string, ch *chan string){
-	filePath := execShell.CreateTempShell(scriptDir, scripts)
+	filePath := execShell.CreateTempShell(scriptDir, scripts, ch)
 	if strings.Contains(os.Getenv("os"), "Windows"){
 		execShell.ExecShell(filePath, workDir, ch)
 	} else {

@@ -29,12 +29,12 @@ func RunTask(taskInfo *vo.TaskVO) {
 
 	// 创建目录
 	if err := utils.CreateDir(workSpace + taskCode, 0666); err != nil {
-		ch <- "【ERROR】 Init Workspace Error:" + err.Error() + "\n"
+		ch <- "【ERROR】 初始化工作目录异常:" + err.Error() + "\n"
 		ch <- OverFlag
 		return
 	}
 	if err := utils.CreateDir(workSpace + taskCode + "@script", 0666); err != nil {
-		ch <- "【ERROR】 Init Workspace Error:" + err.Error() + "\n"
+		ch <- "【ERROR】 初始化工作脚本执行目录异常:" + err.Error() + "\n"
 		ch <- OverFlag
 		return
 	}

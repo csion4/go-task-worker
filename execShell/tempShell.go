@@ -6,7 +6,7 @@ import (
 )
 
 // 创建临时shell脚本
-func CreateTempShell(scriptDir string, scripts string) string {
+func CreateTempShell(scriptDir string, scripts string, ch *chan string) string {
 	var tempFile string
 	if strings.Contains(os.Getenv("os"), "Windows") {
 		tempFile = "/temp.bat"
@@ -14,9 +14,20 @@ func CreateTempShell(scriptDir string, scripts string) string {
 		tempFile = "/temp.sh"
 	}
 
-	file, _ := os.Create(scriptDir + tempFile)
+	file, err := os.Create(scriptDir + tempFile)
+	if err != nil {
+		*ch <- "【ERROR】:创建临时shell脚本异常 " + err.Error() + "\n"
+		*ch <- OverFlag
+		panic(err)
+	}
 	defer file.Close()
-	_, _ = file.WriteString(scripts)
+
+	_, err = file.WriteString(scripts)
+	if err != nil {
+		*ch <- "【ERROR】:写入临时shell脚本异常 " + err.Error() + "\n"
+		*ch <- OverFlag
+		panic(err)
+	}
 	return file.Name()
 }
 func DelFile(file string){
