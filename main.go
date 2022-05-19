@@ -40,6 +40,7 @@ func doSync() {
 	_, _ = file.Write([]byte(strconv.Itoa(net.Port)))
 
 	go func() {
+		time.Sleep(time.Second * 30)
 		// 循环监听
 		client := &http.Client{
 			Timeout: time.Second * 2,

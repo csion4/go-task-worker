@@ -1,14 +1,13 @@
 package ws
 
 import (
+	"com.csion/tasks-worker/uitls"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"os"
 )
-
-const OverFlag = "Over!"
 
 // websocket客户端
 func WebSocketClient(ch chan string, taskCode string, recordId int) {
@@ -29,7 +28,7 @@ func WebSocketClient(ch chan string, taskCode string, recordId int) {
 			log.Println("Error WriteMessage to Websocket Server:", err)
 			return
 		}
-		if logs == OverFlag {
+		if logs == utils.FailedFlag || logs == utils.SuccessFlag {
 			close(ch)
 			return
 		}

@@ -1,6 +1,7 @@
 package execShell
 
 import (
+	"com.csion/tasks-worker/uitls"
 	"os"
 	"runtime"
 	"strings"
@@ -18,7 +19,7 @@ func CreateTempShell(scriptDir string, scripts string, ch *chan string) string {
 	file, err := os.OpenFile(scriptDir + tempFile, os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		*ch <- "【ERROR】:创建临时shell脚本异常 " + err.Error() + "\n"
-		*ch <- OverFlag
+		*ch <- utils.FailedFlag
 		runtime.Goexit()
 	}
 	defer file.Close()
@@ -26,7 +27,7 @@ func CreateTempShell(scriptDir string, scripts string, ch *chan string) string {
 	_, err = file.WriteString(scripts)
 	if err != nil {
 		*ch <- "【ERROR】:写入临时shell脚本异常 " + err.Error() + "\n"
-		*ch <- OverFlag
+		*ch <- utils.FailedFlag
 		runtime.Goexit()
 	}
 	return file.Name()

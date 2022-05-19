@@ -2,6 +2,7 @@ package execShell
 
 import (
 	"bufio"
+	"com.csion/tasks-worker/uitls"
 	"io"
 	"os"
 	"os/exec"
@@ -9,7 +10,6 @@ import (
 	"strings"
 )
 
-const OverFlag = "Over!"
 //执行shell脚本
 func ExecShell(cmd string, dir string, ch *chan string) {
 	*ch <- "【script】: " + cmd + " \n"
@@ -25,14 +25,14 @@ func ExecShell(cmd string, dir string, ch *chan string) {
 	pipe, err1 := command.StdoutPipe()
 	if err1 != nil {
 		*ch <- "【ERROR】:获取脚本执行结果异常" + err1.Error() + "\n"
-		*ch <- OverFlag
+		*ch <- utils.FailedFlag
 		runtime.Goexit()
 	}
 	defer pipe.Close()
 
 	if err2 := command.Start(); err2 != nil {
 		*ch <- "【ERROR】:脚本执行异常" + err2.Error() + "\n"
-		*ch <- OverFlag
+		*ch <- utils.FailedFlag
 		runtime.Goexit()
 	}
 
@@ -43,7 +43,7 @@ func ExecShell(cmd string, dir string, ch *chan string) {
 			return
 		} else if err != nil {
 			*ch <- "【ERROR】:脚本执行异常" + err.Error() + "\n"
-			*ch <- OverFlag
+			*ch <- utils.FailedFlag
 			runtime.Goexit()
 		}
 		*ch <- string(line) + "\n"
