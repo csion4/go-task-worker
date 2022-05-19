@@ -2,6 +2,7 @@ package execShell
 
 import (
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -14,11 +15,11 @@ func CreateTempShell(scriptDir string, scripts string, ch *chan string) string {
 		tempFile = "/temp.sh"
 	}
 
-	file, err := os.Create(scriptDir + tempFile)
+	file, err := os.OpenFile(scriptDir + tempFile, os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		*ch <- "【ERROR】:创建临时shell脚本异常 " + err.Error() + "\n"
 		*ch <- OverFlag
-		panic(err)
+		runtime.Goexit()
 	}
 	defer file.Close()
 
@@ -26,7 +27,7 @@ func CreateTempShell(scriptDir string, scripts string, ch *chan string) string {
 	if err != nil {
 		*ch <- "【ERROR】:写入临时shell脚本异常 " + err.Error() + "\n"
 		*ch <- OverFlag
-		panic(err)
+		runtime.Goexit()
 	}
 	return file.Name()
 }

@@ -9,8 +9,10 @@ import (
 	"strconv"
 )
 
-const TASK = "/task"
-const PING = "/ping"
+const TASK = "/task"		// 任务发起
+const STOP = "/stop"		// 终止任务
+const PING = "/ping"		// 监听worker node
+const REMOVE = "/remove"	// 删除worker node
 
 var Port = 8911
 // 如果用tcp的话，需要自己处理粘包问题，所以这里使用http协议进行交互
@@ -20,6 +22,7 @@ func HttpServer(p int) {
 	}
 	http.HandleFunc(TASK, taskHandle)
 	http.HandleFunc(PING, pongHandle)
+	http.HandleFunc(REMOVE, removeHandle)
 	addListen()
 }
 
@@ -42,6 +45,12 @@ func taskHandle(writer http.ResponseWriter,  request *http.Request) {
 func pongHandle(writer http.ResponseWriter,  request *http.Request) {
 	defer request.Body.Close()
 	_ = json.NewEncoder(writer).Encode(vo.HandleResp{Code: 200, Msg: "Success", Data: "pong"})
+}
+
+func removeHandle(writer http.ResponseWriter,  request *http.Request) {
+	defer os.Exit(0)
+	defer request.Body.Close()
+	_ = json.NewEncoder(writer).Encode(vo.HandleResp{Code: 200, Msg: "Success", Data: "stop"})
 }
 
 // 端口筛选

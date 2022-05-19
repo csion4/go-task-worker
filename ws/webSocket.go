@@ -14,7 +14,7 @@ const OverFlag = "Over!"
 func WebSocketClient(ch chan string, taskCode string, recordId int) {
 	header := http.Header{}
 	header.Set("auth", os.Getenv("Auth"))
-	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://%s/ws/clusterResp?taskCode=%s&recordId=%d", os.Getenv("MNode"), taskCode, recordId), header)
+	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://%s/node/ws/clusterResp?taskCode=%s&recordId=%d", os.Getenv("MNode"), taskCode, recordId), header)
 	if err != nil {
 		log.Println("Error connecting to Websocket Server:", err)
 		return
